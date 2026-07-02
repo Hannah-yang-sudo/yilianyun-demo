@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>亿联云平台后台系统设计规范 · 可视化版</title>
+<style>
+:root{
+  --brand:#2A7DF9;--brand-hover:#2C87FF;--brand-active:#1F70EF;--brand-light:#EAF3FF;--focus:#D9E1FF;
+  --bg-page:#F1F5FE;--bg-layout:#F7F8FA;--bg-soft:#FAFAFA;--card:#FFFFFF;
+  --text:#1D2129;--text-2:#4E5969;--text-3:#86909C;--placeholder:#999999;
+  --line:#E5E6EB;--line-strong:#DCDCDC;--line-muted:#C9CDD4;
+  --success:#00B42A;--warning:#FF9F18;--danger:#F53F3F;
+  --radius-sm:4px;--radius-md:6px;--radius-lg:8px;--radius-xl:12px;
+  --shadow-sm:0 1px 10px rgba(0,0,0,.05), 0 4px 5px rgba(0,0,0,.08), 0 2px 4px -1px rgba(0,0,0,.12);
+  --shadow-menu:0 14px 28px rgba(15,23,42,.16);
+  --shadow-modal:0 6px 30px 5px rgba(0,0,0,.05),0 16px 24px 2px rgba(0,0,0,.04),0 8px 10px -5px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:"PingFang SC",-apple-system,BlinkMacSystemFont,"Microsoft YaHei",Arial,sans-serif;background:var(--bg-page);color:var(--text);font-size:14px;line-height:1.6}
+.hero{height:320px;background:linear-gradient(135deg,#1D2129 0%,#19345F 46%,#2A7DF9 100%);color:#fff;padding:48px 56px 32px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-120px;top:-150px;width:540px;height:540px;border-radius:50%;background:rgba(255,255,255,.1);filter:blur(4px)}
+.hero h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:700;letter-spacing:.2px}.hero p{margin:0;color:rgba(255,255,255,.82);font-size:16px;max-width:780px}.hero .chips{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.hero .chip{height:34px;display:inline-flex;align-items:center;border-radius:999px;padding:0 16px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);font-size:13px}
+.shell{display:grid;grid-template-columns:260px 1fr;gap:24px;max-width:1600px;margin:0 auto;padding:24px}
+.side{position:sticky;top:24px;height:calc(100vh - 48px);background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(28,48,91,.06);overflow:auto}.side .logo{height:42px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;margin:4px 4px 16px}.mark{width:28px;height:28px;border-radius:8px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:700}.toc a{display:flex;align-items:center;height:36px;padding:0 10px;border-radius:8px;color:var(--text-2);text-decoration:none;font-size:13px;margin:2px 0}.toc a:hover{background:var(--bg-page);color:var(--brand)}
+.main{min-width:0}.section{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;margin-bottom:24px;box-shadow:0 10px 30px rgba(28,48,91,.05)}.section h2{font-size:22px;margin:0 0 8px;line-height:1.4}.section .desc{color:var(--text-2);margin:0 0 22px}.grid{display:grid;gap:16px}.grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:var(--bg-layout);border:1px solid var(--line);border-radius:14px;padding:18px}.metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.metric b{font-size:24px;color:var(--brand);display:block;line-height:1.1}.metric span{color:var(--text-2);font-size:13px}.tag{display:inline-flex;align-items:center;height:24px;border-radius:999px;background:var(--brand-light);color:var(--brand);padding:0 10px;font-size:12px;font-weight:500}.swatch{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}.swatch .color{width:48px;height:48px;border-radius:10px;border:1px solid rgba(0,0,0,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}.swatch strong{display:block;font-size:14px}.swatch code{color:var(--text-3);font-size:12px;background:transparent;padding:0}.type-row{display:grid;grid-template-columns:160px 160px 1fr;gap:16px;align-items:center;padding:16px;border-bottom:1px solid var(--line)}.type-row:last-child{border-bottom:0}.type-sample{color:var(--text)}.table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff}.table th{height:50px;background:var(--bg-layout);text-align:left;font-weight:500;padding:0 18px;border-bottom:1px solid var(--line);white-space:nowrap}.table td{height:50px;padding:0 18px;border-bottom:1px solid var(--line);white-space:nowrap}.table tr:nth-child(even) td{background:var(--bg-layout)}.table tr:hover td{background:#F1F6FF}.table tr:last-child td{border-bottom:0}.dot{width:6px;height:6px;border-radius:999px;display:inline-block;margin-right:6px;vertical-align:middle}.op{color:var(--brand);display:inline-flex;gap:10px}.op span:not(:last-child){padding-right:10px;border-right:1px solid #DCDFE6}.btn{height:32px;border-radius:4px;border:0;padding:0 20px;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}.btn.primary{background:var(--brand);color:#fff;box-shadow:0 6px 14px rgba(42,125,249,.18)}.btn.secondary{background:#E7E7E7;color:#333}.btn.outline{background:#fff;border:1px solid #CBD3E6;color:#56586D}.btn.text{background:transparent;color:var(--brand);padding:0 6px}.search-demo{background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;gap:20px;align-items:flex-start;justify-content:space-between;position:relative}.search-main{display:flex;flex:1;flex-wrap:wrap;align-items:flex-start;gap:20px}.search-fields{display:flex;gap:16px;flex-wrap:wrap;flex:0 1 auto}.field{width:160px;height:32px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--placeholder);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:14px}.field.long{width:160px}.field.date{width:160px}.search-actions{display:flex;gap:20px;flex:0 0 auto}.more{flex:0 0 auto;height:32px;display:flex;align-items:center;color:var(--brand);font-weight:500;white-space:nowrap}.layout-demo{height:360px;background:var(--bg-page);border:1px solid var(--line);border-radius:16px;position:relative;overflow:hidden}.topbar{position:absolute;left:0;right:0;top:0;height:54px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:22px}.topbar .brand{font-size:18px;font-weight:600}.topitem{height:32px;padding:0 12px;border-radius:4px;display:flex;align-items:center}.topitem.active{background:var(--bg-page);color:var(--brand-hover)}.sidebar-demo{position:absolute;top:54px;left:0;bottom:0;width:200px;background:#fff;padding:12px 10px}.sideitem{height:42px;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 12px;margin-bottom:4px}.sideitem.active{background:var(--brand);color:#fff}.sideitem.hover{background:var(--bg-page);color:var(--brand-hover)}.content-demo{position:absolute;left:200px;top:54px;right:0;bottom:0;padding:16px}.content-demo .mini-card{height:72px;background:#fff;border-radius:6px;margin-bottom:16px}.content-demo .mini-table{height:190px;background:#fff;border-radius:6px}.mini-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:20px}.mini-cols div{height:32px;background:#fff;border:1px solid var(--line);border-radius:4px}.nav-state{display:flex;gap:14px;flex-wrap:wrap}.nav-pill{height:42px;border-radius:8px;padding:0 14px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line)}.nav-pill.hover{background:var(--bg-page);color:var(--brand-hover)}.nav-pill.selected{background:var(--brand);color:#fff}.tooltip{height:30px;min-width:92px;border-radius:5px;background:#111827;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0 12px;box-shadow:0 8px 20px rgba(0,0,0,.16)}.float-menu{width:150px;background:#fff;border-radius:8px;box-shadow:var(--shadow-menu);padding:6px}.float-menu div{height:34px;border-radius:6px;padding:0 12px;display:flex;align-items:center;font-size:13px}.float-menu .active{background:var(--brand-light);color:var(--brand-hover)}.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:16px}.do{border-left:4px solid var(--success)}.dont{border-left:4px solid var(--danger)}.do ul,.dont ul{margin:10px 0 0;padding-left:18px;color:var(--text-2)}.codeblock{background:#111827;color:#E5E7EB;border-radius:14px;padding:18px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;max-height:520px}.appendix{max-height:none}.appendix h1{font-size:24px}.appendix h2{font-size:20px;margin-top:28px;border-top:1px solid var(--line);padding-top:24px}.appendix h3{font-size:16px;margin-top:20px}.appendix p,.appendix li{color:var(--text-2)}.appendix code{background:#F2F3F5;border-radius:4px;padding:1px 5px;color:#1D2129}.appendix pre{background:#111827;color:#E5E7EB;border-radius:12px;padding:16px;overflow:auto}.appendix pre code{background:transparent;color:inherit;padding:0}.print-note{display:none}
+@media(max-width:1000px){.shell{grid-template-columns:1fr}.side{position:static;height:auto}.grid.cols-4,.grid.cols-3,.grid.cols-2,.do-dont{grid-template-columns:1fr}.hero{height:auto;padding:34px 24px}.type-row{grid-template-columns:1fr}.layout-demo{height:420px}.content-demo{left:64px}.sidebar-demo{width:64px}.sideitem span{display:none}}
+@media print{body{background:#fff}.hero{background:#1D2129!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.shell{display:block;padding:0}.side{display:none}.section{break-inside:avoid;box-shadow:none}.print-note{display:block;color:#fff;margin-top:18px}.appendix{display:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>亿联云平台后台系统设计规范</h1>
+  <p>面向领导评审与前端落地的可视化版本。基于 DESIGN.md 中的 Figma / SVG / HTML 规范整理，聚焦 1440×900 B 端后台的布局、颜色、字体、导航、搜索、表格、表单、弹框与交互规则。</p>
+  <div class="chips"><span class="chip">1440×900 B 端后台</span><span class="chip">PingFang SC</span><span class="chip">主色 #2A7DF9</span><span class="chip">不重新设计，只提取规范</span></div>
+  <div class="print-note">此页面可直接打印或导出 PDF 给评审使用。</div>
+</header>
+<div class="shell">
+  <aside class="side">
+    <div class="logo"><span class="mark">亿</span><span>Design Guide</span></div>
+    <nav class="toc">
+      <a href="#overview">01 设计定位</a><a href="#layout">02 页面布局</a><a href="#colors">03 颜色系统</a><a href="#type">04 字体系统</a><a href="#spacing">05 间距 / 圆角 / 阴影</a><a href="#nav">06 导航规范</a><a href="#search">07 搜索区 / 更多筛选</a><a href="#button">08 按钮规范</a><a href="#table">09 表格规范</a><a href="#form">10 表单 / 弹框 / 抽屉</a><a href="#interaction">11 交互规则</a><a href="#tokens">12 CSS Token</a><a href="#appendix">完整 DESIGN.md</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <section class="section" id="overview">
+      <h2>01. 设计定位</h2><p class="desc">清晰、高效、稳定，优先服务数据查看、搜索筛选、表格操作、表单填写、弹框确认等后台高频任务。</p>
+      <div class="grid cols-4"><div class="metric"><b>1440×900</b><span>主要校验尺寸</span></div><div class="metric"><b>54px</b><span>顶部导航高度</span></div><div class="metric"><b>200 / 64px</b><span>侧栏展开 / 收起</span></div><div class="metric"><b>32px</b><span>输入框 / 按钮高度</span></div></div>
+    </section>
+    <section class="section" id="layout">
+      <h2>02. 页面基础布局</h2><p class="desc">白色顶部导航、白色侧栏、浅蓝工作区、白色内容容器。主内容不做多层卡片嵌套。</p>
+      <div class="layout-demo"><div class="topbar"><span class="mark">亿</span><span class="brand">亿联云平台</span><span class="topitem">首页</span><span class="topitem active">数据</span><span class="topitem">服务</span><span class="topitem">更多</span></div><div class="sidebar-demo"><div class="sideitem active">▦ <span>区域楼宇</span></div><div class="sideitem hover">▣ <span>设备管理</span></div><div class="sideitem">☰ <span>系统设置</span></div></div><div class="content-demo"><div class="mini-card"><div class="mini-cols"><div></div><div></div><div></div><div></div><div></div></div></div><div class="mini-table"></div></div></div>
+    </section>
+    <section class="section" id="colors">
+      <h2>03. 颜色系统</h2><p class="desc">颜色按语义分为品牌色、文本色、边框色、背景色、状态色。页面中不要新增相近蓝色。</p>
+      <div class="grid cols-4">
+        <div class="swatch"><span class="color" style="background:#2A7DF9"></span><div><strong>主色</strong><code>#2A7DF9</code></div></div><div class="swatch"><span class="color" style="background:#2C87FF"></span><div><strong>Hover</strong><code>#2C87FF</code></div></div><div class="swatch"><span class="color" style="background:#1F70EF"></span><div><strong>Active</strong><code>#1F70EF</code></div></div><div class="swatch"><span class="color" style="background:#EAF3FF"></span><div><strong>浅蓝选中</strong><code>#EAF3FF</code></div></div>
+        <div class="swatch"><span class="color" style="background:#F1F5FE"></span><div><strong>页面背景</strong><code>#F1F5FE</code></div></div><div class="swatch"><span class="color" style="background:#F7F8FA"></span><div><strong>表头 / 偶数行</strong><code>#F7F8FA</code></div></div><div class="swatch"><span class="color" style="background:#FFFFFF"></span><div><strong>卡片白底</strong><code>#FFFFFF</code></div></div><div class="swatch"><span class="color" style="background:#E5E6EB"></span><div><strong>默认边框</strong><code>#E5E6EB</code></div></div>
+        <div class="swatch"><span class="color" style="background:#1D2129"></span><div><strong>一级文字</strong><code>#1D2129</code></div></div><div class="swatch"><span class="color" style="background:#4E5969"></span><div><strong>二级文字</strong><code>#4E5969</code></div></div><div class="swatch"><span class="color" style="background:#86909C"></span><div><strong>辅助文字</strong><code>#86909C</code></div></div><div class="swatch"><span class="color" style="background:#999999"></span><div><strong>占位文字</strong><code>#999999</code></div></div>
+        <div class="swatch"><span class="color" style="background:#00B42A"></span><div><strong>成功 / 在线</strong><code>#00B42A</code></div></div><div class="swatch"><span class="color" style="background:#FF9F18"></span><div><strong>警告 / 停用</strong><code>#FF9F18</code></div></div><div class="swatch"><span class="color" style="background:#F53F3F"></span><div><strong>错误 / 危险</strong><code>#F53F3F</code></div></div><div class="swatch"><span class="color" style="background:#DCDCDC"></span><div><strong>离线 / 未连接</strong><code>#DCDCDC</code></div></div>
+      </div>
+    </section>
+    <section class="section" id="type"><h2>04. 字体系统</h2><p class="desc">统一使用 PingFang SC。14px / 22px 是后台最高频正文规格，12px / 20px 用于辅助信息。</p><div class="card"><div class="type-row"><strong>超大标题</strong><code>20px / 28px · 600</code><div class="type-sample" style="font-size:20px;line-height:28px;font-weight:600">页面标题 / 重要模块标题</div></div><div class="type-row"><strong>中标题</strong><code>16px / 24px · 600</code><div class="type-sample" style="font-size:16px;line-height:24px;font-weight:600">弹框标题 / 抽屉标题</div></div><div class="type-row"><strong>正文 / 表格</strong><code>14px / 22px · 400</code><div class="type-sample" style="font-size:14px;line-height:22px">表格正文、菜单、按钮、搜索框、链接文字</div></div><div class="type-row"><strong>辅助信息</strong><code>12px / 20px · 400</code><div class="type-sample" style="font-size:12px;line-height:20px;color:#86909C">Tooltip、提示文本、无数据、表单辅助说明</div></div></div></section>
+    <section class="section" id="spacing"><h2>05. 间距 / 圆角 / 阴影</h2><p class="desc">采用 4px 基础单位。控件高度 32px、表格行高 50px、卡片和弹框圆角 6px。</p><div class="grid cols-3"><div class="card"><h3>间距</h3><p>4 / 8 / 12 / 16 / 20 / 24 / 32px</p><p>搜索控件间距 16px，按钮组间距 20px，卡片内边距建议 24px。</p></div><div class="card"><h3>圆角</h3><p>输入框 / 按钮 4px</p><p>卡片 / 弹框 / 抽屉 6px</p><p>菜单项 8px，展示卡片 12px</p></div><div class="card"><h3>阴影</h3><p>普通页面少用重阴影；弹框、抽屉、浮层使用统一阴影。</p><span class="tag">轻量、克制、可读</span></div></div></section>
+    <section class="section" id="nav"><h2>06. 导航规范</h2><p class="desc">顶部导航不使用深蓝底；左侧一级菜单 selected 使用蓝底白字；二级菜单 hover / active 使用浅蓝底。</p><div class="grid cols-2"><div class="card"><h3>菜单状态</h3><div class="nav-state"><div class="nav-pill">默认</div><div class="nav-pill hover">Hover</div><div class="nav-pill selected">Selected</div></div></div><div class="card"><h3>收起态浮层</h3><div style="display:flex;gap:20px;align-items:flex-start"><div class="float-menu"><div>设备管理</div><div class="active">设备状态</div><div>门禁设备</div></div></div></div></div></section>
+    <section class="section" id="search"><h2>07. 搜索区 / 更多筛选</h2><p class="desc">搜索区和表格区必须分成两个白色卡片。更多筛选在搜索卡片内展开，不做弹框。</p><div class="search-demo"><div class="search-main"><div class="search-fields"><div class="field">请输入编号</div><div class="field">请选择运营单位 ▾</div><div class="field">请选择状态 ▾</div><div class="field long">设备名称 / 序列号</div><div class="field date">创建时间范围 ▾</div><div class="field">设备类型 ▾</div></div><div class="search-actions"><button class="btn primary">查询</button><button class="btn secondary">重置</button></div></div><div class="more">收起筛选⌃</div></div></section>
+    <section class="section" id="button"><h2>08. 按钮规范</h2><p class="desc">按钮高度统一 32px，圆角 4px。工具栏按钮可用 34px。</p><div style="display:flex;gap:16px;flex-wrap:wrap"><button class="btn primary">查询</button><button class="btn secondary">重置</button><button class="btn outline">导入</button><button class="btn text">区域编辑</button><button class="btn text" style="color:#F53F3F">删除</button></div></section>
+    <section class="section" id="table"><h2>09. 表格规范</h2><p class="desc">表头 50px，数据行 50px，奇偶行斑马纹，Hover 使用 #F1F6FF，操作列固定在右侧。</p><div style="overflow:auto"><table class="table"><thead><tr><th>序号</th><th>运营单位</th><th>区域楼宇编号</th><th>区域楼宇地址</th><th>状态</th><th>操作</th></tr></thead><tbody><tr><td>01</td><td>平台主管</td><td>358</td><td>规定显示15个字，超出范围显示...</td><td><span class="dot" style="background:#2A7DF9"></span>启用</td><td><span class="op"><span>区域编辑</span><span>区域架构</span><span>关联</span></span></td></tr><tr><td>02</td><td>平台主管</td><td>358</td><td>深圳市宝安区桥头桥和路嘟地方大...</td><td><span class="dot" style="background:#FF9F18"></span>停用</td><td><span class="op"><span>查看</span><span>编辑</span><span>更多</span></span></td></tr><tr><td>03</td><td>直营网</td><td>842</td><td>规定显示15个字，超出范围显示...</td><td><span class="dot" style="background:#00B42A"></span>在线</td><td><span class="op"><span>查看</span><span>编辑</span><span>更多</span></span></td></tr></tbody></table></div></section>
+    <section class="section" id="form"><h2>10. 表单 / 弹框 / 抽屉</h2><p class="desc">表单控件高度统一 32px，复杂表单采用分步填写。弹框适合短流程，字段多时改用页面或抽屉。</p><div class="grid cols-3"><div class="card"><h3>表单页</h3><p>三列布局，控件宽约 373px，列间距约 24px；分组标题左侧使用主蓝竖条。</p></div><div class="card"><h3>分步表单</h3><p>房屋信息 → 基本信息 → 门禁权限 → 其他信息。当前步骤蓝底白字。</p></div><div class="card"><h3>弹框</h3><p>常用尺寸 520×460，圆角 6px，标题 16px / 24px / 600，遮罩约 70%。</p></div></div></section>
+    <section class="section" id="interaction"><h2>11. 交互规则</h2><p class="desc">所有可点击元素必须有 Hover，导航必须有 Selected / Active，展开收起必须有明确状态。</p><div class="do-dont"><div class="card do"><h3>Do</h3><ul><li>使用 #2A7DF9 作为主色</li><li>Hover 使用 #2C87FF 或浅蓝底</li><li>表格超宽时仅表格区域横向滚动</li><li>操作栏多个操作项之间加分隔线</li><li>收起侧栏时内容区同步左移</li></ul></div><div class="card dont"><h3>Don’t</h3><ul><li>不要重新设计视觉风格</li><li>不要在表格 Hover 时改变行高</li><li>不要把更多筛选做成弹框</li><li>不要卡片套卡片</li><li>不要随意新增相近蓝色</li></ul></div></div></section>
+    <section class="section" id="tokens"><h2>12. CSS Token</h2><p class="desc">前端实现时可直接复制以下变量作为基础 token。</p><pre class="codeblock"><code>:root {
+  --font-family-base: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-primary: #2A7DF9;
+  --color-primary-hover: #2C87FF;
+  --color-primary-active: #1F70EF;
+  --color-primary-bg: #EAF3FF;
+  --color-bg-page: #F1F5FE;
+  --color-bg-layout: #F7F8FA;
+  --color-bg-card: #FFFFFF;
+  --color-text-1: #1D2129;
+  --color-text-2: #4E5969;
+  --color-text-3: #86909C;
+  --color-text-4: #999999;
+  --color-border: #E5E6EB;
+  --color-success: #00B42A;
+  --color-warning: #FF9F18;
+  --color-danger: #F53F3F;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --control-height: 32px;
+  --table-row-height: 50px;
+  --topbar-height: 54px;
+  --sidebar-width-expanded: 200px;
+  --sidebar-width-collapsed: 64px;
+}</code></pre></section>
+    <section class="section appendix" id="appendix"><h2>完整 DESIGN.md 附录</h2><p class="desc">以下为上传规范文件的完整内容，便于前端逐条查阅。</p><h1>亿联云平台后台系统设计规范</h1>
+<p>本文档基于 <code>design-source-html/</code> 中 Builder.io / Figma quick copy 导出的 HTML 整理，<code>design-source/</code> 中 SVG 作为视觉和尺寸校验。HTML 保留了 Figma 的图层名、组件名、变体名、CSS token、字号、行高、颜色和阴影，因此本文以 HTML 为主要依据。</p>
+<h2>设计定位</h2>
+<ul>
+<li>项目名称：亿联云平台后台系统。</li>
+<li>设计对象：主要面向 <code>1440 × 900</code> 的 B 端后台系统。</li>
+<li>设计目标：清晰、高效、稳定，优先服务数据查看、搜索筛选、表格操作、表单填写、弹框确认等后台高频任务。</li>
+<li>设计风格：白色顶部导航、白色侧栏、浅色工作区、白色内容容器。</li>
+<li>字体：<code>PingFang SC</code>。</li>
+<li>原则：不重新设计风格，只复用现有 Figma / SVG / HTML 规范稿中的规则。</li>
+</ul>
+<h2>数据来源</h2>
+<ul>
+<li>SVG：<code>design-source/</code></li>
+<li>HTML：<code>design-source-html/</code></li>
+<li>页面截图：<code>docs/assets/数据-区域楼宇.png</code>、<code>docs/assets/数据-区域楼宇-收起.png</code></li>
+<li>表单 / 弹框补充 SVG：<code>docs/assets/设备管理-新增设备.svg</code>、<code>docs/assets/弹框.svg</code></li>
+<li>分步表单补充来源：<code>design-source-html/表单二-住户信息-添加住户.figma.html</code>、<code>docs/assets/表单二-住户信息-添加住户.png</code></li>
+<li>已读取页面：颜色、Typography、效果样式、组件、表格、导航和布局、抽屉弹框、设备管理新增设备、数据区域楼宇展开/收起。</li>
+<li>使用优先级：HTML token 和组件变体优先；页面截图用于校验真实布局比例；SVG 用于辅助校验视觉尺寸。</li>
+</ul>
+<h2>规范优先级</h2>
+<ul>
+<li>页面生成时优先遵循本文各组件章节中的最新明确规则。</li>
+<li>如果同一规则在基础规范和交互规范中重复，以“交互规范最终口径”和最近补充的组件规则为准。</li>
+<li>不确定时不要自行扩展样式，应先回到 Figma / HTML / 截图来源确认。</li>
+</ul>
+<h2>页面基础布局</h2>
+<ul>
+<li>页面基准：<code>1440 × 900</code>。</li>
+<li>顶部导航高度：<code>54px</code>。</li>
+<li>顶部导航背景：<code>#FFFFFF</code>。</li>
+<li>展开侧栏宽度：<code>200px</code>。</li>
+<li>收起侧栏宽度：<code>64px</code>。</li>
+<li>内容区背景：<code>#F1F5FE</code>、<code>#F7F8FA</code>。</li>
+<li>内容卡片背景：<code>#FFFFFF</code>。</li>
+<li>内容卡片圆角：<code>6px</code>。</li>
+<li>主内容容器不做多层卡片嵌套，优先用留白、分割线和表格层级组织信息。</li>
+</ul>
+<h2>颜色系统</h2>
+<h3>品牌色</h3>
+<ul>
+<li>主色 <code>--Brand-Brand</code>：<code>#2A7DF9</code></li>
+<li>Hover <code>--Brand-hover</code>：<code>#2C87FF</code></li>
+<li>Active <code>--Brand-active</code>：<code>#1F70EF</code></li>
+<li>深蓝 <code>--Brand-Brand7-Normal</code>：<code>#0052D9</code></li>
+<li>辅助蓝 <code>--Brand-Brand1</code>：<code>#5398FF</code></li>
+<li>浅蓝背景 <code>--Brand-Light</code>：<code>#EAF3FF</code></li>
+<li>聚焦描边：<code>#D9E1FF</code></li>
+</ul>
+<h3>文本色</h3>
+<ul>
+<li>一级文字 <code>--Text-Primary</code>：<code>#1D2129</code></li>
+<li>二级文字：<code>#4E5969</code></li>
+<li>辅助文字：<code>#86909C</code></li>
+<li>占位文字：<code>#999999</code></li>
+<li>TDesign 主文字：<code>rgba(0, 0, 0, 0.90)</code></li>
+<li>TDesign 次级文字：<code>rgba(0, 0, 0, 0.60)</code></li>
+<li>TDesign 占位文字：<code>rgba(0, 0, 0, 0.40)</code></li>
+<li>TDesign 禁用文字：<code>rgba(0, 0, 0, 0.26)</code></li>
+<li>白色反色文字：<code>rgba(255, 255, 255, 0.90)</code>、<code>rgba(255, 255, 255, 0.80)</code></li>
+</ul>
+<h3>边框色</h3>
+<ul>
+<li>默认边框 <code>---Line-2-</code>：<code>#E5E6EB</code></li>
+<li>强边框 <code>--Gray-Gray4-</code>：<code>#DCDCDC</code></li>
+<li>弱边框：<code>#C9CDD4</code></li>
+</ul>
+<h3>背景色</h3>
+<ul>
+<li>页面浅背景：<code>#F1F5FE</code></li>
+<li>通用浅背景 / 表格表头：<code>#F7F8FA</code></li>
+<li>规范页背景：<code>#FAFAFA</code></li>
+<li>卡片 / 面板：<code>#FFFFFF</code></li>
+<li>禁用背景：<code>#EEEEEE</code>、<code>#F2F3F5</code></li>
+<li>灰色背景：<code>#E7E7E7</code>、<code>#F3F3F3</code></li>
+</ul>
+<h3>状态色</h3>
+<ul>
+<li>成功：<code>#00B42A</code></li>
+<li>警告：<code>#FF9F18</code></li>
+<li>错误 / 危险：<code>#F53F3F</code></li>
+<li>信息 / 进行中：<code>#2A7DF9</code></li>
+</ul>
+<h2>字体系统</h2>
+<ul>
+<li>字体 token：<code>----td-font-family: &quot;PingFang SC&quot;</code>。</li>
+<li>超大标题：<code>20px / 28px</code>，字重 <code>600</code>。</li>
+<li>中标题：<code>16px / 24px</code>，字重 <code>600</code>，常用于弹框和抽屉标题。</li>
+<li>小标题：<code>14px / 22px</code>。</li>
+<li>正文：<code>14px / 22px</code>，这是 HTML 中使用频率最高的规格。</li>
+<li>辅助文字：<code>12px / 20px</code>。</li>
+<li>链接文字：<code>14px / 22px</code>。</li>
+<li>标记文字：<code>14px / 22px</code>。</li>
+<li>规范页顶部标题：<code>22px</code>，字重 <code>600</code>，白色。</li>
+</ul>
+<p>注意：HTML 中少量出现 <code>Microsoft YaHei UI 13px / 18px</code> 和 <code>Alibaba PuHuiTi 2.0 14px / 18px</code>，主要来自导出组件或个别按钮文本。项目实现仍统一使用 <code>PingFang SC</code>。</p>
+<h2>间距系统</h2>
+<ul>
+<li>基础单位：<code>4px</code>。</li>
+<li>常用间距：<code>4px</code>、<code>8px</code>、<code>12px</code>、<code>16px</code>、<code>20px</code>、<code>24px</code>、<code>32px</code>。</li>
+<li>表单项辅助信息间距：<code>4px</code>。</li>
+<li>输入框内部 padding：<code>5px 8px</code>。</li>
+<li>按钮内部 padding：<code>5px 20px</code>。</li>
+<li>按钮图文间距：<code>6px</code>。</li>
+<li>抽屉内容纵向间距：<code>24px</code>。</li>
+<li>抽屉底部按钮组间距：<code>16px</code>。</li>
+<li>搜索区控件间距：<code>16px</code>；搜索框组与搜索 / 重置按钮组间距：<code>20px</code>。</li>
+<li>内容卡片内边距建议：<code>24px</code>。</li>
+</ul>
+<h2>圆角系统</h2>
+<ul>
+<li>基础圆角 token：<code>--Radius-border-radius-base: 4px</code>。</li>
+<li>小圆角：<code>2px</code>、<code>3px</code>。</li>
+<li>输入框 / 按钮：<code>4px</code>。</li>
+<li>卡片 / 弹框 / 抽屉面板：<code>6px</code>。</li>
+<li>菜单高亮 / 大按钮：<code>8px</code>。</li>
+<li>展示卡片：<code>12px</code>。</li>
+<li>单选圆形：<code>16px</code> 或 50%。</li>
+</ul>
+<h2>阴影系统</h2>
+<ul>
+<li>轻阴影：<code>0 1px 10px rgba(0,0,0,.05), 0 4px 5px rgba(0,0,0,.08), 0 2px 4px -1px rgba(0,0,0,.12)</code></li>
+<li>中阴影：<code>0 3px 14px 2px rgba(0,0,0,.05), 0 8px 10px 1px rgba(0,0,0,.06), 0 5px 5px -3px rgba(0,0,0,.10)</code></li>
+<li>重阴影：<code>0 6px 30px 5px rgba(0,0,0,.05), 0 16px 24px 2px rgba(0,0,0,.04), 0 8px 10px -5px rgba(0,0,0,.08)</code></li>
+<li>抽屉阴影：<code>-4px 0 4px rgba(0,0,0,.03)</code></li>
+<li>收起菜单浮层阴影：<code>-2px 0 4px rgba(50,89,148,.20)</code></li>
+<li>菜单浮层阴影：<code>0 4px 10px rgba(0,0,0,.10)</code></li>
+<li>聚焦描边阴影：<code>0 0 0 2px #D9E1FF</code></li>
+</ul>
+<h2>顶部导航规范</h2>
+<ul>
+<li>高度：<code>54px</code>。</li>
+<li>背景：<code>#FFFFFF</code>。</li>
+<li>底部分割线：<code>1px solid #E5E6EB</code>。</li>
+<li>左侧品牌：Logo + <code>亿联云平台</code>，文字 <code>18px / 24px</code>，字重 <code>600</code>，颜色 <code>#1D2129</code>。</li>
+<li>顶部导航承载平台标识、一级模块入口、数据看板入口、用户头像和用户下拉入口。</li>
+<li>顶部导航固定在页面顶部，不随主内容滚动。</li>
+<li>顶部菜单项高度：<code>32px</code>。</li>
+<li>顶部菜单项圆角：<code>4px</code>。</li>
+<li>顶部菜单项水平内边距：建议 <code>10px 12px</code>。</li>
+<li>顶部菜单项图标尺寸：<code>16px × 16px</code>。</li>
+<li>顶部菜单项文字：<code>14px / 22px</code>。</li>
+<li>顶部菜单状态必须包含：<code>Default</code>、<code>Hover</code>、<code>Active</code>、<code>Sled</code>。</li>
+</ul>
+<h3>顶部菜单状态</h3>
+<ul>
+<li>Default：</li>
+<li>背景：透明。</li>
+<li>文字颜色：<code>#1D2129</code>。</li>
+<li>图标颜色：<code>Text/次要</code>，即 <code>#4E5969</code>。</li>
+<li>Hover：</li>
+<li>背景：<code>#EAF3FF</code> 或 <code>#F1F5FE</code>，只作用于当前菜单项，不允许整条顶部导航染色。</li>
+<li>文字颜色：Brand Hover <code>#2C87FF</code>。</li>
+<li>图标颜色：Brand Hover <code>#2C87FF</code>。</li>
+<li>整体上移 <code>1px</code>，不改变菜单项尺寸。</li>
+<li>Active：</li>
+<li>背景：同 Hover 浅蓝底。</li>
+<li>文字颜色：Brand Active <code>#1F70EF</code>。</li>
+<li>图标颜色：Brand Active <code>#1F70EF</code>。</li>
+<li>位移恢复为 <code>translateY(0)</code>，不使用深蓝底，不使用白色文字。</li>
+<li>Sled / Selected：</li>
+<li>背景：同 Hover 浅蓝底。</li>
+<li>文字颜色：品牌色 <code>#2A7DF9</code>。</li>
+<li>图标颜色：品牌色 <code>#2A7DF9</code>。</li>
+<li>不使用深蓝底，不使用白色文字，不使用白色图标。</li>
+<li>顶部菜单图标需支持颜色态，不能只准备一张不可变色图。</li>
+<li>如果用 SVG 文件切换状态，Default 使用 Text/次要色图标，Hover / Active / Sled 使用品牌色图标。</li>
+</ul>
+<h2>左侧导航规范</h2>
+<h3>展开态</h3>
+<ul>
+<li>宽度：<code>200px</code>。</li>
+<li>背景：<code>#FFFFFF</code>。</li>
+<li>主菜单项高度：<code>42px</code>。</li>
+<li>左侧菜单项宽度：<code>180px</code>。</li>
+<li>左侧菜单项圆角：<code>8px</code>。</li>
+<li>左侧一级菜单 selected：背景 <code>#2A7DF9</code>，文字和图标白色。</li>
+<li>左侧一级菜单 default：背景透明，文字 <code>#1D2129</code>，图标 <code>#4E5969</code>。</li>
+<li>左侧一级菜单 hover：背景 <code>#F1F5FE</code>，文字和图标 <code>#2C87FF</code>。</li>
+</ul>
+<h3>收起态</h3>
+<ul>
+<li>宽度：<code>64px</code>。</li>
+<li>组件名：<code>Menu-fold (收起菜单)</code>。</li>
+<li>只保留一级菜单图标。</li>
+<li>当前选中项使用蓝色或蓝底高亮。</li>
+<li>Hover 时显示 Tooltip 或二级菜单浮层。</li>
+</ul>
+<h3>Tooltip</h3>
+<ul>
+<li>组件名中出现 <code>文字气泡</code>。</li>
+<li>用于收起态菜单项说明或图标提示。</li>
+<li>Tooltip 应靠近触发对象展示，不遮挡主内容。</li>
+<li>文案优先使用 <code>14px / 22px</code>，辅助说明可用 <code>12px / 20px</code>。</li>
+</ul>
+<h3>二级菜单浮层</h3>
+<ul>
+<li>组件名：<code>二级菜单</code>。</li>
+<li>白底，使用菜单浮层阴影或收起菜单阴影。</li>
+<li>菜单项 Hover 使用 <code>#EAF3FF</code>。</li>
+<li>当前项使用主蓝文字或蓝底白字。</li>
+</ul>
+<h2>搜索区规范</h2>
+<ul>
+<li>搜索组件名：<code>search</code>。</li>
+<li>搜索区使用独立白色卡片，位于表格卡片上方。</li>
+<li>搜索输入框高度：<code>32px</code>。</li>
+<li>输入框圆角：<code>4px</code>。</li>
+<li>输入框边框：<code>#E5E6EB</code>。</li>
+<li>输入框文字：<code>14px / 22px</code>。</li>
+<li>提示占位文字颜色：<code>#999999</code>。</li>
+<li>搜索区按钮高度：<code>32px</code>。</li>
+<li>搜索框控件之间的横向间距：<code>16px</code>。</li>
+<li>搜索框组与搜索 / 重置按钮组之间的间距：<code>20px</code>。</li>
+<li>搜索按钮和重置按钮跟随搜索框自然排列，不固定在页面最右侧。</li>
+<li>搜索区和表格区必须分成两个白色卡片显示区域，二者间距 <code>20px</code>。</li>
+<li>搜索卡片背景 <code>#FFFFFF</code>，圆角 <code>6px</code>，padding <code>20px</code>。</li>
+<li>搜索卡片内部第一行筛选控件上下留白必须一致，均为 <code>20px</code>；搜索行本身不要额外设置 <code>margin-bottom</code>。</li>
+<li>表格卡片背景 <code>#FFFFFF</code>，圆角 <code>6px</code>，padding 可根据表格贴边规则设置为 <code>0</code> 或 <code>12px</code>。</li>
+</ul>
+<h2>搜索区 · 更多筛选规范</h2>
+<h3>1. 使用场景</h3>
+<p>当列表页筛选条件较多，第一行无法完整承载时，使用“更多筛选”展开态。</p>
+<p>适用页面：</p>
+<ul>
+<li>设备管理</li>
+<li>住户信息</li>
+<li>订单列表</li>
+<li>告警记录</li>
+<li>访问记录</li>
+<li>其他筛选项超过 4 个的列表页</li>
+</ul>
+<h3>2. 默认收起态</h3>
+<p>默认状态只展示高频筛选项。</p>
+<p>默认第一行建议展示：</p>
+<ul>
+<li>关键词 / 编号</li>
+<li>运营单位</li>
+<li>状态</li>
+<li>类型</li>
+<li>查询按钮</li>
+<li>重置按钮</li>
+<li>更多筛选入口固定在搜索区右侧</li>
+</ul>
+<p>样式规则：</p>
+<ul>
+<li>搜索区背景：<code>#FFFFFF</code></li>
+<li>搜索区圆角：<code>6px</code></li>
+<li>搜索区 padding：<code>20px</code></li>
+<li>搜索项高度：<code>32px</code></li>
+<li>搜索项默认宽度：<code>160px</code></li>
+<li>筛选项之间横向间距：<code>16px</code></li>
+<li>筛选项与查询 / 重置按钮组间距：<code>20px</code></li>
+<li>更多筛选入口固定在搜索区最右侧，使用文字按钮</li>
+<li>查询按钮高度：<code>32px</code></li>
+<li>重置按钮高度：<code>32px</code></li>
+<li>搜索区与表格区间距：<code>20px</code></li>
+<li>搜索区文字字号：<code>14px</code></li>
+<li>placeholder 颜色：<code>#999999</code></li>
+<li>输入框 / 选择框边框：<code>#E5E6EB</code></li>
+<li>输入框 Hover 边框：<code>#2C87FF</code></li>
+<li>输入框 Hover 背景：<code>#F8FBFF</code></li>
+</ul>
+<h3>3. 展开态 / 更多筛选态</h3>
+<p>点击“更多筛选”后，搜索区向下展开，展示第二行或更多筛选项。</p>
+<p>展开态规则：</p>
+<ul>
+<li>搜索区高度不固定，根据筛选行数自适应</li>
+<li>每一行筛选项高度保持 <code>32px</code></li>
+<li>行间距：<code>16px</code></li>
+<li>筛选项横向间距：<code>16px</code></li>
+<li>第二行筛选项左侧与第一行筛选项左侧对齐</li>
+<li>查询 / 重置按钮跟随筛选项自然排列，顺序为先“查询”后“重置”，与前一个筛选项保持 <code>20px</code> 间距</li>
+<li>更多筛选 / 收起筛选入口固定在搜索区右侧，不参与筛选项换行</li>
+<li>如果筛选项过多，按钮组可以放在最后一行右侧</li>
+<li>展开后入口文案变为“收起筛选”</li>
+<li>展开 / 收起文字使用主色 <code>#2A7DF9</code></li>
+<li>展开 / 收起箭头跟随状态旋转</li>
+<li>展开动画建议 <code>160ms–240ms</code>，不要过度动效</li>
+</ul>
+<h3>4. 布局规则</h3>
+<p>搜索区使用 flex 布局或 grid 布局均可，但必须满足：</p>
+<ul>
+<li>筛选项按从左到右、从上到下排列</li>
+<li>每行筛选项左对齐</li>
+<li>按钮组跟随筛选项，不固定到页面最右侧</li>
+<li>更多筛选入口固定在搜索区右侧</li>
+<li>多行展开时不得打乱查询 / 重置按钮位置</li>
+<li>不同页面的筛选项宽度尽量统一</li>
+<li>同一搜索区内的普通筛选框长度保持一致</li>
+<li>日期范围、长字段筛选可以使用 <code>220px–260px</code></li>
+<li>普通下拉选择使用 <code>160px</code></li>
+<li>关键词输入框可使用 <code>180px–220px</code></li>
+</ul>
+<p>推荐尺寸：</p>
+<ul>
+<li>普通 Select / Input：<code>160px × 32px</code></li>
+<li>日期范围：<code>240px × 32px</code></li>
+<li>长关键词输入：<code>220px × 32px</code></li>
+<li>查询按钮：<code>68px × 32px</code></li>
+<li>重置按钮：<code>68px × 32px</code></li>
+<li>更多筛选文字按钮：<code>auto × 32px</code></li>
+</ul>
+<h3>5. 交互规则</h3>
+<p>点击“更多筛选”：</p>
+<ul>
+<li>展开隐藏筛选项</li>
+<li>箭头向上</li>
+<li>文案改为“收起筛选”</li>
+</ul>
+<p>点击“收起筛选”：</p>
+<ul>
+<li>收起第二行及之后的筛选项</li>
+<li>箭头向下</li>
+<li>文案改为“更多筛选”</li>
+</ul>
+<p>点击“查询”：</p>
+<ul>
+<li>使用当前所有筛选条件，包括展开区域中的条件</li>
+</ul>
+<p>点击“重置”：</p>
+<ul>
+<li>清空所有筛选条件，包括展开区域中的条件</li>
+<li>保持当前展开 / 收起状态不强制改变</li>
+</ul>
+<h3>6. Do</h3>
+<ul>
+<li>常用筛选项放在第一行</li>
+<li>低频筛选项放在展开区域</li>
+<li>展开态仍保持搜索区简洁</li>
+<li>筛选项宽度尽量统一</li>
+<li>查询按钮使用主按钮</li>
+<li>重置按钮使用灰色 / 次按钮</li>
+<li>更多筛选入口使用文字按钮</li>
+<li>展开后行间距保持 <code>16px</code></li>
+<li>搜索区不要压缩表格阅读空间</li>
+</ul>
+<h3>7. Don’t</h3>
+<ul>
+<li>不要默认展示所有筛选项</li>
+<li>不要让搜索区高度超过页面首屏的 <code>1/4</code></li>
+<li>不要让每个筛选项宽度都不一样</li>
+<li>不要把查询 / 重置按钮放到页面中间</li>
+<li>不要把更多筛选做成弹框</li>
+<li>不要使用新的颜色和圆角</li>
+<li>不要在展开区使用卡片嵌套卡片</li>
+<li>不要改变已有搜索区的基础风格</li>
+</ul>
+<h2>按钮规范</h2>
+<h3>通用</h3>
+<ul>
+<li>组件名：<code>按钮</code>、<code>Button 按钮</code>。</li>
+<li>高度：<code>32px</code>。</li>
+<li>圆角：<code>4px</code>。</li>
+<li>内边距：<code>5px 20px</code>。</li>
+<li>图文间距：<code>6px</code>。</li>
+<li>字体：<code>14px / 22px</code>。</li>
+<li>类型：<code>Primary</code>、<code>Secondary</code>、<code>Outline</code>。</li>
+<li>状态：<code>default</code>、<code>hover</code>、<code>active</code>、<code>disabled</code>。</li>
+<li>图标：<code>None</code>、<code>left</code> 等。</li>
+</ul>
+<h3>主按钮 Primary</h3>
+<ul>
+<li>Default：背景 <code>#2A7DF9</code>，文字白色。</li>
+<li>Hover：背景 <code>#2C87FF</code>。</li>
+<li>Active：背景 <code>#1F70EF</code>。</li>
+<li>Disabled：文字或整体透明度降低，不允许表现为可点击。</li>
+</ul>
+<h3>次按钮 Secondary</h3>
+<ul>
+<li>背景：<code>#E7E7E7</code> 或 <code>#FFFFFF</code>。</li>
+<li>文字：<code>#1D2129</code>。</li>
+<li>边框：按场景使用 <code>#DCDCDC</code> 或 <code>#E5E6EB</code>。</li>
+</ul>
+<h3>描边按钮 Outline</h3>
+<ul>
+<li>默认文字：<code>#4E5969</code>。</li>
+<li>Hover：<code>#2C87FF</code>。</li>
+<li>Active：<code>#1F70EF</code>。</li>
+<li>Disabled：<code>#8FB8F7</code>。</li>
+<li>常用于“导入”等次级但需要露出的操作。</li>
+</ul>
+<h3>文本按钮</h3>
+<ul>
+<li>普通操作使用主蓝。</li>
+<li>危险操作使用 <code>#F53F3F</code>。</li>
+<li>表格操作列优先使用文本按钮。</li>
+</ul>
+<h2>表格规范</h2>
+<h3>普通表格</h3>
+<ul>
+<li>组件名：<code>表格栏</code>、<code>表头</code>、<code>基础列</code>。</li>
+<li>表头背景：<code>#F7F8FA</code>。</li>
+<li>表格行高：<code>50px</code>。</li>
+<li>表格文字：<code>14px / 22px</code>。</li>
+<li>表格文字颜色：<code>#1D2129</code>。</li>
+<li>次级文字：<code>#4E5969</code> 或 <code>#86909C</code>。</li>
+<li>分割线：<code>#E5E6EB</code>。</li>
+<li>表格单元格左右内边距：<code>24px</code>。</li>
+</ul>
+<h3>表头</h3>
+<ul>
+<li>表头变体：<code>类型=默认, 行高=适中, 分割线=横</code>。</li>
+<li>支持排序：<code>排序=默认</code>。</li>
+<li>支持筛选：<code>类型=带筛选</code>。</li>
+</ul>
+<h3>列类型</h3>
+<ul>
+<li>多选列：<code>行数=奇数/偶数, 类型=多选</code>。</li>
+<li>文本栏：<code>行数=奇数/偶数, 类型=文本栏</code>。</li>
+<li>文本栏 + 头像：<code>行数=奇数/偶数, 类型=文本栏+头像</code>。</li>
+<li>文本按钮：<code>行数=奇数/偶数, 类型=文本按钮</code>。</li>
+<li>标签栏：<code>分类别=完成/离线/失败</code>。</li>
+<li>操作栏：<code>分类别=更多</code>。</li>
+</ul>
+<h3>超宽表格</h3>
+<ul>
+<li>内容超出容器时允许横向滚动。</li>
+<li>横向滚动只出现在表格区域，不影响整页滚动。</li>
+<li>表头和数据列必须保持对齐。</li>
+</ul>
+<h3>固定操作列</h3>
+<ul>
+<li>操作列固定在右侧。</li>
+<li>操作列背景跟随当前行背景：表头和偶数行 <code>#F7F8FA</code>，奇数行 <code>#FFFFFF</code>，Hover 时使用 <code>#F1F6FF</code>。</li>
+<li>操作列表头必须使用表头背景 <code>#F7F8FA</code>，不允许单独显示白底。</li>
+<li>与滚动区交界处可使用弱分割线或轻阴影。</li>
+<li>操作列按页面示例执行：<code>数据 / 区域楼宇</code> 直接展示 <code>区域编辑 / 区域架构 / 关联</code>；普通管理列表默认直接展示 2 个高频文本操作，其余放入“更多”下拉。</li>
+<li>危险操作使用红色，优先放入“更多”下拉，避免误触。</li>
+</ul>
+<h3>斑马纹 / Hover</h3>
+<ul>
+<li>表头背景使用 <code>#F7F8FA</code>。</li>
+<li>奇数数据行背景使用 <code>#FFFFFF</code>。</li>
+<li>偶数数据行背景使用 <code>#F7F8FA</code>。</li>
+<li>Hover 使用 <code>#F1F6FF</code>。</li>
+<li>Hover 不改变行高，避免表格跳动。</li>
+</ul>
+<h2>分页规范</h2>
+<ul>
+<li>组件名：<code>Pagination 分页</code>。</li>
+<li>位置：表格底部右侧。</li>
+<li>尺寸：<code>medium</code>。</li>
+<li>变体：<code>theme 风格=default 默认</code>。</li>
+<li>支持：每页条数 <code>pagesize=true</code>，跳转 <code>jumper=true</code>。</li>
+<li>页码按钮高度建议 <code>32px</code>。</li>
+<li>当前页使用主蓝强调。</li>
+<li>禁用上一页/下一页使用禁用文字色。</li>
+</ul>
+<h2>表单规范</h2>
+<p>本节已按 <code>docs/assets/设备管理-新增设备.svg</code> 补充。该示例为新增设备表单页，画布尺寸 <code>1440 × 1182</code>，用于校验长表单页面的布局、分组和控件规格。</p>
+<h3>表单页布局</h3>
+<ul>
+<li>页面基准宽度：<code>1440px</code>。</li>
+<li>长表单允许页面高度超过首屏，当前示例高度为 <code>1182px</code>。</li>
+<li>内容区背景：<code>#F1F5FE</code>。</li>
+<li>表单内容卡片：<code>left:216px; top:107px; width:1208px; height:1059px; radius:6px; bg:#FFFFFF</code>。</li>
+<li>卡片内左右留白：<code>20px</code>。</li>
+<li>分组标题左侧使用主蓝竖条，竖条约 <code>4px × 14px</code>。</li>
+<li>表单项采用三列布局：每列控件宽度约 <code>373px</code>，列间距约 <code>24px</code>。</li>
+<li>三列起始 x 坐标示例：<code>236px</code>、<code>633px</code>、<code>1031px</code>。</li>
+<li>控件统一高度：<code>32px</code>。</li>
+<li>表单项纵向节奏优先按 <code>52px</code> 或 <code>82px</code> 的行距组织，保持分组清晰。</li>
+<li>多个业务分组之间需要明显留白，不要把所有字段压成一整块。</li>
+</ul>
+<h3>表单项</h3>
+<ul>
+<li>组件名：<code>form-item</code>。</li>
+<li>表单标签组件名：<code>表单标签</code>。</li>
+<li>表单域组件名：<code>输入框</code>、<code>选择框</code>、<code>日期选择</code>、<code>多行文本输入器</code>。</li>
+<li>表单标签高度：<code>32px</code>。</li>
+<li>表单标签文字：<code>14px / 22px</code>。</li>
+<li>表单标签支持：<code>必填=true/false</code>。</li>
+<li>表单标签可带提示 icon、冒号和文本替换。</li>
+<li>必填星号颜色：<code>#F53F3F</code>。</li>
+<li>新增 / 编辑类页面中，必填项星号放在标签左侧，标签与控件上下排列。</li>
+<li>标签到控件的垂直间距建议 <code>8px</code>。</li>
+<li>同一行内标签基线、控件顶部必须对齐，避免三列字段高低不齐。</li>
+</ul>
+<h3>输入框</h3>
+<ul>
+<li>组件名：<code>输入框</code>。</li>
+<li>高度：<code>32px</code>。</li>
+<li>最小宽度：<code>108px</code>。</li>
+<li>圆角：<code>4px</code>。</li>
+<li>边框：<code>#E5E6EB</code>。</li>
+<li>内部 padding：<code>5px 8px</code>。</li>
+<li>输入文字：<code>14px / 22px</code>。</li>
+<li>占位文字：<code>#999999</code>。</li>
+<li>状态：<code>默认</code>、<code>禁用</code>、<code>聚焦</code>。</li>
+<li>聚焦：边框使用主蓝，可加 <code>0 0 0 2px #D9E1FF</code>。</li>
+<li>禁用：背景 <code>#EEEEEE</code> 或 <code>#F2F3F5</code>，文字使用禁用色。</li>
+<li>错误：边框/提示使用 <code>#F53F3F</code>。</li>
+<li>新增设备示例中，普通输入框宽度约 <code>373px</code>，高度 <code>32px</code>。</li>
+<li>输入框边框在 SVG 中常见为 <code>#E5E6EB</code>，描边 <code>1px</code>。</li>
+<li>内容区使用白底，不额外加重阴影。</li>
+</ul>
+<h3>选择框</h3>
+<ul>
+<li>组件名：<code>选择框</code>、<code>Select 选择器</code>。</li>
+<li>高度：<code>32px</code>。</li>
+<li>圆角：<code>4px</code>。</li>
+<li>边框：<code>#E5E6EB</code>。</li>
+<li>支持单选 / 多选：<code>多选=true/false</code>。</li>
+<li>状态：<code>默认</code>、<code>禁用</code>。</li>
+<li>支持有数据 / 无数据：<code>有数据=true/false</code>。</li>
+<li>选择框与输入框同宽同高，右侧保留下拉箭头区域。</li>
+<li>默认占位文字使用 <code>#999999</code>，选中内容使用 <code>#1D2129</code>。</li>
+</ul>
+<h3>长表单操作区</h3>
+<ul>
+<li>长表单页面底部应提供明确的主操作和次操作。</li>
+<li>主操作使用主蓝按钮，次操作使用默认按钮或文字按钮。</li>
+<li>如果页面内容超过首屏，底部操作区建议固定或至少在页面底部清晰可见。</li>
+<li>提交前需要校验必填项，错误提示紧跟对应控件，不要只用全局提示。</li>
+</ul>
+<h3>复杂表单 / 分步填写</h3>
+<p>本节按 <code>表单二：住户信息-添加住户</code> 示例补充，适用于字段多、流程长、存在权限配置或多业务分组的新增 / 编辑页面。</p>
+<ul>
+<li>复杂表单不要一次性铺满所有字段，应采用分步填写。</li>
+<li>示例步骤：<code>房屋信息</code> → <code>基本信息</code> → <code>门禁权限</code> → <code>其他信息</code>。</li>
+<li>页面内容卡片示例：<code>left:216px; top:107px; width:1208px; height:777px; radius:6px; bg:#FFFFFF</code>。</li>
+<li>步骤条位于表单卡片顶部，距离卡片内边距约 <code>20px</code>。</li>
+<li>步骤条高度：<code>40px</code>。</li>
+<li>步骤条使用箭头分段样式。</li>
+<li>当前步骤：</li>
+<li>背景：品牌色 <code>#2A7DF9</code>。</li>
+<li>文字：白色。</li>
+<li>箭头衔接处保持白色切分。</li>
+<li>未开始步骤：</li>
+<li>背景：<code>#F7F8FA</code>。</li>
+<li>文字：<code>#4E5969</code>。</li>
+<li>已完成步骤：</li>
+<li>可使用浅蓝底 <code>#EAF3FF</code> 或品牌色标识，具体按业务确认；同一流程内必须统一。</li>
+<li>步骤条下方展示当前步骤对应表单分组，不展示后续步骤字段。</li>
+<li>当前步骤表单分组使用边框容器：</li>
+<li>边框：<code>1px solid #E5E6EB</code>。</li>
+<li>圆角：<code>4px</code>。</li>
+<li>分组头背景：<code>#F7F8FA</code>。</li>
+<li>分组头高度约 <code>44px</code>。</li>
+<li>分组头左侧主蓝竖条约 <code>4px × 16px</code>。</li>
+<li>分步表单字段采用三列布局，列间距 <code>24px</code>。</li>
+<li>单个字段控件高度统一 <code>32px</code>。</li>
+<li>表单内容区左右内边距建议 <code>40px</code>。</li>
+<li>底部操作区固定在表单卡片底部，背景白色，顶部阴影 <code>0 -2px 4px rgba(0,0,0,.03)</code>。</li>
+<li>底部按钮居中排列，按钮间距 <code>16px</code>。</li>
+<li>第一步按钮：<code>取消</code> + <code>下一步</code>。</li>
+<li>中间步骤按钮：<code>上一步</code> + <code>下一步</code>。</li>
+<li>最后一步按钮：<code>上一步</code> + <code>保存</code>。</li>
+<li>点击 <code>下一步</code> 前只校验当前步骤字段，不校验未展示的后续步骤字段。</li>
+<li>点击步骤条是否允许跳转需按业务确认；默认不允许跳过未完成步骤。</li>
+<li>复杂表单页面的 Codex 生成规则：只生成当前步骤内容，不要把所有步骤字段同时铺开。</li>
+</ul>
+<h3>辅助信息</h3>
+<ul>
+<li>组件名：<code>辅助信息</code>。</li>
+<li>文字：<code>12px / 20px</code>。</li>
+<li>普通说明：<code>#86909C</code>。</li>
+<li>链接说明：<code>#2A7DF9</code>。</li>
+<li>与输入框间距：<code>4px</code>。</li>
+</ul>
+<h2>弹框规范</h2>
+<p>本节已按 <code>docs/assets/弹框.svg</code> 补充。该示例为 <code>1440 × 900</code> 画布上的居中表单弹框，用于校验遮罩、弹框尺寸、表单控件和按钮区。</p>
+<h3>弹框基础</h3>
+<ul>
+<li>画布尺寸：<code>1440 × 900</code>。</li>
+<li>遮罩：覆盖全屏，黑色透明层，示例透明度约 <code>70%</code>。</li>
+<li>弹框位置：居中，示例 <code>left:470px; top:185px</code>。</li>
+<li>弹框尺寸：<code>520px × 460px</code>。</li>
+<li>圆角：<code>6px</code>。</li>
+<li>背景：<code>#FFFFFF</code>。</li>
+<li>弹框使用重阴影，与页面内容拉开层级。</li>
+</ul>
+<h3>弹框结构</h3>
+<ul>
+<li>头部：包含标题和右上角关闭图标。</li>
+<li>标题：<code>16px / 24px</code>，字重 <code>600</code>，颜色 <code>#1D2129</code>。</li>
+<li>内容区：以表单项为主，标签在控件上方。</li>
+<li>内容区控件宽度：约 <code>340px</code>。</li>
+<li>内容区控件高度：<code>32px</code>。</li>
+<li>控件左侧位置示例：<code>x:580px</code>。</li>
+<li>控件纵向位置示例：<code>273px</code>、<code>325px</code>、<code>377px</code>，行间距约 <code>52px</code>。</li>
+<li>底部操作区：按钮右对齐。</li>
+<li>按钮组间距：<code>16px</code>。</li>
+<li>主按钮使用 <code>#2A7DF9</code>，次按钮使用默认白底描边或浅灰底。</li>
+</ul>
+<h3>弹框使用规则</h3>
+<ul>
+<li>用于短流程确认、少量字段填写、关联配置等轻量任务。</li>
+<li>字段较多或需要复杂分组时，不要塞进弹框，应改用页面或抽屉。</li>
+<li>弹框内表单建议控制在 3 到 6 个字段。</li>
+<li>点击关闭、取消、遮罩时，如已有填写内容，应根据业务风险决定是否二次确认。</li>
+<li>危险确认使用 <code>#F53F3F</code>，并说明后果。</li>
+</ul>
+<h2>抽屉规范</h2>
+<ul>
+<li>常见宽度：<code>520px</code>、<code>720px</code>。</li>
+<li>高度示例：<code>810px</code>。</li>
+<li>背景：<code>#FFFFFF</code>。</li>
+<li>阴影：<code>-4px 0 4px rgba(0,0,0,.03)</code>。</li>
+<li>头部内边距：<code>20px</code>。</li>
+<li>头部分割线：<code>1px solid #E5E6EB</code>。</li>
+<li>标题：<code>16px / 24px</code>，字重 <code>600</code>。</li>
+<li>内容纵向间距：<code>24px</code>。</li>
+<li>底部操作区 padding：<code>12px</code>。</li>
+<li>底部操作区固定，避免长表单滚动后找不到提交按钮。</li>
+</ul>
+<h2>卡片规范</h2>
+<ul>
+<li>背景：<code>#FFFFFF</code>。</li>
+<li>圆角：<code>6px</code>。</li>
+<li>内容卡片优先不用重阴影，用背景和间距区分层级。</li>
+<li>内边距建议：<code>24px</code>。</li>
+<li>不要卡片套卡片。</li>
+<li>数据概览小卡片可使用轻阴影或弱边框。</li>
+</ul>
+<h2>状态点 / 状态文本规范</h2>
+<ul>
+<li>成功：<code>#00B42A</code></li>
+<li>警告：<code>#FF9F18</code></li>
+<li>错误：<code>#F53F3F</code></li>
+<li>信息 / 进行中：<code>#2A7DF9</code></li>
+<li>状态点建议直径：<code>6px</code> 或 <code>8px</code>。</li>
+<li>同一页面内状态展示方式保持一致。</li>
+</ul>
+<h2>空状态规范</h2>
+<ul>
+<li>空状态放在表格或内容区域中央。</li>
+<li>使用弱灰图标/插画 + 简短提示 + 可选主操作按钮。</li>
+<li>文案颜色：<code>#86909C</code> 或 <code>#999999</code>。</li>
+<li>可解决的空状态提供主按钮。</li>
+<li>纯暂无数据不要使用警告色。</li>
+</ul>
+<h2>其他组件规范</h2>
+<h3>单选 / 多选</h3>
+<ul>
+<li>单选组件名：<code>Radio 单选</code>、<code>Radio-Group 单选组</code>。</li>
+<li>多选组件名：<code>Checkbox 多选</code>、<code>Checkbox-Group 多选组</code>。</li>
+<li>尺寸：<code>16px × 16px</code>。</li>
+<li>选中态：<code>#2A7DF9</code>。</li>
+<li>禁用态：背景 <code>#EEEEEE</code>，边框 <code>#DCDCDC</code>，文字 <code>rgba(0,0,0,.26)</code>。</li>
+<li>Checkbox 支持半选：<code>indeterminate=true</code>。</li>
+</ul>
+<h3>Tabs</h3>
+<ul>
+<li>组件名：<code>normalTabs 选项卡-默认主题</code>、<code>item/normalTabs/top/m</code>。</li>
+<li>位置：顶部。</li>
+<li>尺寸：<code>medium</code>。</li>
+<li>状态：<code>normal 默认</code>、<code>select 选中</code>。</li>
+</ul>
+<h3>面包屑</h3>
+<ul>
+<li>组件名：<code>Breadcrumb 面包屑</code>、<code>item/breadcrumb 面板屑</code>。</li>
+<li>用于页面层级回溯，不替代页面标题。</li>
+<li>面包屑位于主内容区顶部，普通文字 <code>#86909C</code>，当前页文字 <code>#2A7DF9</code>。</li>
+<li>面包屑不使用蓝色下划线，不做 Tab 样式。</li>
+<li>层级分隔符使用 <code>/</code> 或右箭头，颜色 <code>#C9CDD4</code>。</li>
+</ul>
+<h3>全局提示</h3>
+<ul>
+<li>组件名：<code>Message 全局提示</code>。</li>
+<li>主题：<code>info 默认</code>、<code>question 帮助</code>、<code>success 成功</code>、<code>warning 警告</code>、<code>error 错误</code>、<code>loading 等待</code>。</li>
+<li>支持关闭按钮、图标和底部按钮。</li>
+</ul>
+<h2>交互样式规范</h2>
+<p>本节基于演示 HTML 和用户补充的 <code>Interaction Rules 交互状态规范</code> 整理，适用于后台页面的 hover、active、selected、open、expanded、collapsed、下拉、表格滚动和分页状态。</p>
+<p>交互反馈原则：轻量、明确、统一。所有可点击元素必须具备清晰状态反馈；导航类组件必须具备当前态；展开收起类组件必须具备明确的打开 / 关闭状态。</p>
+<h3>交互色彩 Token</h3>
+<pre><code>:root {
+  --brand-primary: #2A7DF9;
+  --brand-hover: #2C87FF;
+  --brand-active: #1F70EF;
+  --brand-light: #EAF3FF;
+
+  --page-bg: #F1F5FE;
+  --card-bg: #FFFFFF;
+  --table-header-bg: #F7F8FA;
+  --table-row-hover: #F1F6FF;
+
+  --text-primary: #1D2129;
+  --text-secondary: #4E5969;
+  --text-placeholder: #999999;
+  --text-disabled: #86909C;
+
+  --border-default: #E5E6EB;
+  --border-divider: #DCDFE6;
+}</code></pre>
+<ul>
+<li><code>#2A7DF9</code>：主按钮、链接文字、当前页、主要操作。</li>
+<li><code>#2C87FF</code>：hover 状态文字、边框、图标。</li>
+<li><code>#1F70EF</code>：点击 / pressed 状态。</li>
+<li><code>#EAF3FF</code>：菜单浅色选中背景、二级菜单 active 背景。</li>
+<li><code>#F1F5FE</code>：页面背景、普通 hover 浅底。</li>
+<li><code>#F1F6FF</code>：表格行 hover 背景。</li>
+</ul>
+<h3>基础动效</h3>
+<ul>
+<li>普通 hover / active 过渡时长：<code>0.18s</code>。</li>
+<li>侧栏展开收起过渡：<code>0.28s cubic-bezier(.2,.8,.2,1)</code>。</li>
+<li>二级菜单展开过渡：<code>height .26s cubic-bezier(.2,.8,.2,1), opacity .2s</code>。</li>
+<li>Tooltip / 浮层进入动画：<code>0.16s ease-out</code>。</li>
+<li>下拉菜单进入动画：<code>0.16s ease-out</code>。</li>
+<li>微交互位移：hover 常用 <code>translateY(-1px)</code>，active 常用 <code>scale(.98)</code> 或 <code>scale(.985)</code>。</li>
+<li>不要使用夸张弹跳或长时间动画，后台系统交互动效应轻、快、明确。</li>
+</ul>
+<h3>顶部菜单交互</h3>
+<ul>
+<li>默认态：透明背景，文字 <code>#1D2129</code>，图标 <code>Text/次要 #4E5969</code>。</li>
+<li>菜单高度：<code>32px</code>，圆角 <code>4px</code>。</li>
+<li>Hover：浅蓝背景 <code>#EAF3FF</code> 或 <code>#F1F5FE</code>，文字和图标使用 Brand Hover <code>#2C87FF</code>，只作用于当前菜单项。</li>
+<li>Active 点击态：保持浅蓝背景，文字和图标使用 Brand Active <code>#1F70EF</code>，不使用深蓝底，不做位移和缩放。</li>
+<li>Sled / Selected 当前态：浅蓝背景，文字和图标使用品牌色 <code>#2A7DF9</code>，不使用深蓝色块，不使用白色文字和白色图标。</li>
+<li>Pressed：保持当前菜单项浅蓝底和品牌色反馈，不改变尺寸占位。</li>
+<li>图标需准备 default / sled 两套状态；default 图标为 Text/次要色，hover / active / sled 显示品牌色图标。</li>
+<li>当前菜单图标可使用 <code>pop .28s ease-out</code> 轻量缩放反馈。</li>
+</ul>
+<h3>左侧导航交互</h3>
+<ul>
+<li>展开态侧栏宽度：<code>200px</code>。</li>
+<li>收起态侧栏宽度：<code>64px</code>。</li>
+<li>侧栏宽度变化使用 <code>0.28s cubic-bezier(.2,.8,.2,1)</code>。</li>
+<li>菜单项高度：<code>42px</code>，圆角 <code>8px</code>。</li>
+<li>展开态一级菜单宽度：<code>180px</code>。</li>
+<li>一级菜单 hover：背景 <code>#F1F5FE</code>，文字 / 图标 <code>#2C87FF</code>。</li>
+<li>一级菜单 selected：背景 <code>#2A7DF9</code>，文字 / 图标白色。</li>
+<li>selected 可使用横向扫光反馈：<code>sweep .48s ease-out</code>，只作轻量选中反馈。</li>
+<li>菜单项 active：轻微缩放 <code>scale(.985)</code>。</li>
+<li>收起态隐藏文字，文字透明度降为 <code>0</code> 并左移 <code>8px</code>。</li>
+<li>父级菜单 expanded 时箭头旋转 <code>180deg</code>，父级保持 selected。</li>
+<li>收起按钮 hover：背景 <code>#F1F5FE</code>，颜色 <code>#2C87FF</code>。</li>
+<li>收起态按钮图标旋转 <code>180deg</code>。</li>
+</ul>
+<h3>二级菜单与浮层</h3>
+<ul>
+<li>展开态二级菜单默认高度为 <code>0</code>、透明度 <code>0</code>。</li>
+<li>父菜单 expanded 后二级菜单展开，高度示例 <code>252px</code>，透明度 <code>1</code>。</li>
+<li>父菜单箭头 expanded 时旋转 <code>180deg</code>。</li>
+<li>二级菜单项高度：<code>42px</code>。</li>
+<li>二级菜单项左侧缩进：约 <code>36px</code>，并保留树形连接线。</li>
+<li>二级菜单项 hover：背景 <code>#F1F5FE</code>，文字 <code>#2C87FF</code>。</li>
+<li>二级菜单项 active：背景 <code>#EAF3FF</code>，文字 <code>#2C87FF</code>。</li>
+<li>二级菜单 hover 不允许使用一级菜单的蓝底白字样式。</li>
+<li>二级菜单 active 可使用左侧树线标识当前层级。</li>
+<li>收起态不展示内嵌二级菜单，改为固定浮层。</li>
+<li>收起态二级浮层：<code>left:64px</code>，宽度约 <code>150px</code>，圆角 <code>8px</code>，阴影 <code>0 14px 28px rgba(15,23,42,.16)</code>。</li>
+<li>浮层菜单项高度：<code>34px</code>，hover / active 使用 <code>#EAF3FF</code> 与 <code>#2C87FF</code>。</li>
+<li>Tooltip：深色背景 <code>#111827</code>，白色文字，高度 <code>30px</code>，圆角 <code>5px</code>，阴影 <code>0 8px 20px rgba(0,0,0,.16)</code>。</li>
+</ul>
+<h3>下拉选择器交互</h3>
+<ul>
+<li>默认态：边框 <code>#E5E6EB</code>，背景白色，占位文字 <code>#999999</code>。</li>
+<li>Hover / Open：边框 <code>#2C87FF</code>，背景 <code>#F8FBFF</code>，外发光 <code>0 0 0 3px rgba(44,135,255,.08)</code>，整体上移 <code>1px</code>。</li>
+<li>下拉箭头默认向下，open 时旋转为向上，颜色变为 <code>#2C87FF</code>。</li>
+<li>下拉面板位于控件下方 <code>8px</code>，圆角 <code>8px</code>，边框 <code>#E5EAF3</code>，阴影 <code>0 12px 28px rgba(15,23,42,.12)</code>。</li>
+<li>下拉项高度：<code>34px</code>。</li>
+<li>下拉项 hover：背景 <code>#F4F8FF</code>，文字 <code>#2C87FF</code>。</li>
+<li>点击选项后，选项文案回填到选择器文本区域，并关闭下拉面板。</li>
+<li>同一时间只允许一个下拉选择器处于 open 状态。</li>
+<li>筛选栏中查询、重置按钮跟随搜索框自然排列；搜索框之间间距 <code>16px</code>，搜索框组与按钮组间距 <code>20px</code>；“更多筛选 / 收起筛选”固定在搜索区右侧。</li>
+<li>点击页面空白区域时关闭所有下拉和收起态浮层。</li>
+</ul>
+<h3>按钮交互</h3>
+<ul>
+<li>普通按钮 hover：整体上移 <code>1px</code>。</li>
+<li>主按钮默认：背景 <code>#2A7DF9</code>，白色文字，可使用 <code>0 6px 14px rgba(42,125,249,.18)</code> 轻阴影。</li>
+<li>主按钮 hover：背景 <code>#2C87FF</code>。</li>
+<li>主按钮 active：背景 <code>#1F70EF</code>。</li>
+<li>灰按钮默认：背景 <code>#E7E7E7</code>，文字 <code>#333333</code>。</li>
+<li>灰按钮 hover：背景 <code>#DCDFE5</code>。</li>
+<li>工具按钮默认：边框 <code>#CBD3E6</code>，文字 <code>#56586D</code>，白色背景。</li>
+<li>工具按钮 hover：边框 <code>#2C87FF</code>，文字 <code>#2C87FF</code>，背景 <code>#F4F8FF</code>，阴影 <code>0 6px 12px rgba(17,24,39,.04)</code>，图标放大到 <code>1.08</code>。</li>
+<li>主工具按钮使用蓝底白字白图标，hover 时切换为 <code>#2C87FF</code>。</li>
+</ul>
+<h3>表格交互</h3>
+<ul>
+<li>表格容器支持横向和纵向滚动，滚动条使用细样式。</li>
+<li>表头固定：<code>position: sticky; top: 0; z-index: 3</code>。</li>
+<li>操作列固定在右侧：<code>position: sticky; right: 0; z-index: 4</code>。</li>
+<li>操作列宽度示例：<code>190px</code>，左侧阴影 <code>-2px 0 8px rgba(50,89,148,.16)</code>。</li>
+<li>表格行 hover：所有单元格背景变为 <code>#F1F6FF</code>。</li>
+<li>表格行 hover 不改变文字颜色、状态点颜色和操作栏链接颜色。</li>
+<li>表头和偶数数据行背景 <code>#F7F8FA</code>，奇数数据行背景白色。</li>
+<li>单元格内容保持单行省略，不因 hover 改变行高。</li>
+<li>表格操作链接 hover 可上移 <code>1px</code>，颜色保持主蓝。</li>
+</ul>
+<h3>表格操作栏交互</h3>
+<ul>
+<li>操作项使用文字链接，不使用按钮背景，不使用图标。</li>
+<li>默认颜色：<code>#2A7DF9</code>。</li>
+<li>Hover 颜色可保持 <code>#2A7DF9</code> 或切换为 <code>#2C87FF</code>，并可轻微上移 <code>1px</code>。</li>
+<li>多个操作项之间必须使用竖向分隔线。</li>
+<li>分隔线颜色：<code>#DCDFE6</code>，宽度 <code>1px</code>，高度 <code>12px</code>。</li>
+<li>“更多”后面不加箭头。</li>
+<li><code>数据 / 区域楼宇</code> 操作栏示例：<code>区域编辑 / 区域架构 / 关联</code>。</li>
+<li><code>更多 / 设备 / 设备管理</code> 操作栏示例：<code>查看 / 编辑 / 更多</code>。</li>
+<li>两类操作栏必须使用同一套间距与分隔线规则。</li>
+</ul>
+<h3>状态点与占位符交互</h3>
+<ul>
+<li>状态点建议尺寸：<code>6px × 6px</code>，圆角 <code>999px</code>，右侧间距 <code>6px</code>。</li>
+<li>蓝色 / 启用 / 已连接：<code>#2A7DF9</code>。</li>
+<li>绿色 / 成功 / 在线：<code>#00B42A</code>。</li>
+<li>橙色 / 停用 / 警告：<code>#FF9F18</code>。</li>
+<li>红色 / 失败：<code>#F53F3F</code>。</li>
+<li>灰色 / 离线 / 未连接：<code>#DCDCDC</code>。</li>
+<li>无值占位符统一使用 <code>-</code>，颜色 <code>#86909C</code>。</li>
+<li>占位符前不显示状态点。</li>
+</ul>
+<h3>分页交互</h3>
+<ul>
+<li>分页控件高度：<code>32px</code>。</li>
+<li>页码默认：白底，边框 <code>#DCDCDC</code>。</li>
+<li>页码 hover：边框 <code>#2A7DF9</code>，文字 <code>#2A7DF9</code>，整体上移 <code>1px</code>。</li>
+<li>当前页：背景 <code>#2A7DF9</code>，边框 <code>#2A7DF9</code>，文字白色。</li>
+<li>跳转输入区域使用浅灰底 <code>#F3F3F3</code>，避免误认为主操作。</li>
+<li>分页器不换行；<code>/20 页</code>、页码、跳转输入框、每页条数选择必须保持单行展示。</li>
+</ul>
+<h3>状态类命名</h3>
+<p>以下状态类必须保持统一，不允许随意改名：</p>
+<ul>
+<li><code>.active</code>：当前页面、当前分页、当前二级菜单。</li>
+<li><code>.selected</code>：当前一级菜单。</li>
+<li><code>.expanded</code>：父级菜单展开。</li>
+<li><code>.collapsed</code>：侧边栏收起。</li>
+<li><code>.open</code>：下拉框展开。</li>
+<li><code>.show-float-sub</code>：收起状态下显示二级菜单浮层。</li>
+</ul>
+<h3>Codex 实现要求</h3>
+<ul>
+<li>所有可点击元素必须有 hover 状态。</li>
+<li>所有导航类组件必须有 selected / active 状态。</li>
+<li>主色统一使用 <code>#2A7DF9</code>。</li>
+<li>hover 色统一使用 <code>#2C87FF</code>。</li>
+<li>active 点击色统一使用 <code>#1F70EF</code>。</li>
+<li>二级菜单 active 背景统一使用 <code>#EAF3FF</code>。</li>
+<li>普通 hover 浅底优先使用 <code>#F1F5FE</code>。</li>
+<li>表格行 hover 使用 <code>#F1F6FF</code>。</li>
+<li>操作栏“更多”不加箭头。</li>
+<li>操作栏多个操作项之间必须有分隔线。</li>
+<li>侧边栏收起时内容区必须同步左移。</li>
+<li>超宽表格必须支持横向滚动，操作列必须固定在右侧。</li>
+<li>查询 / 重置按钮跟随筛选项排列；“更多筛选 / 收起筛选”固定在搜索区右侧。</li>
+</ul>
+<h2>Do / Don’t</h2>
+<h2>交互规范最终口径</h2>
+<h3>顶部菜单栏</h3>
+<ul>
+<li>默认态：透明背景，文字 <code>#1D2129</code>，图标使用 default 灰色态。</li>
+<li>菜单高度：<code>32px</code>，圆角 <code>4px</code>。</li>
+<li>Hover：背景 <code>#F1F5FE</code>，文字和图标使用 Brand Hover <code>#2C87FF</code>，整体上移 <code>1px</code>。</li>
+<li>Active 点击态：文字和图标使用 Brand Active <code>#1F70EF</code>；背景可保持 <code>#F1F5FE</code>；位移恢复 <code>translateY(0)</code>。</li>
+<li>Selected 当前态：背景 <code>#F1F5FE</code>，文字和图标使用 Brand Hover <code>#2C87FF</code>，不使用深蓝色块。</li>
+<li>Pressed：<code>translateY(0) scale(.98)</code>。</li>
+<li>图标需准备 default / active 两套状态；hover 和 active 时隐藏 default 图标，显示 active 图标。</li>
+<li>当前菜单图标可使用 <code>pop .28s ease-out</code> 轻量缩放反馈。</li>
+</ul>
+<h3>左侧导航交互</h3>
+<ul>
+<li>展开态侧栏宽度：<code>200px</code>；收起态侧栏宽度：<code>64px</code>。</li>
+<li>侧栏宽度变化：<code>0.28s cubic-bezier(.2,.8,.2,1)</code>。</li>
+<li>菜单项高度：<code>42px</code>，圆角 <code>8px</code>；展开态一级菜单宽度：<code>180px</code>。</li>
+<li>一级菜单 hover：背景 <code>#F1F5FE</code>，文字 / 图标 <code>#2C87FF</code>。</li>
+<li>一级菜单 selected：背景 <code>#2A7DF9</code>，文字 / 图标白色。</li>
+<li>selected 可使用 <code>sweep .48s ease-out</code> 轻量选中反馈。</li>
+<li>菜单项 active：<code>scale(.985)</code>。</li>
+<li>收起态隐藏文字，文字透明度降为 <code>0</code> 并左移 <code>8px</code>。</li>
+<li>父级菜单 <code>.expanded</code> 时箭头旋转 <code>180deg</code>，父级保持 selected。</li>
+<li>收起按钮 hover：背景 <code>#F1F5FE</code>，颜色 <code>#2C87FF</code>；收起态按钮图标旋转 <code>180deg</code>。</li>
+</ul>
+<h3>二级菜单与浮层</h3>
+<ul>
+<li>展开态二级菜单默认高度 <code>0</code>、透明度 <code>0</code>；父菜单 <code>.expanded</code> 后高度示例 <code>252px</code>、透明度 <code>1</code>。</li>
+<li>二级菜单项高度：<code>42px</code>；左侧缩进约 <code>36px</code>，保留树形连接线。</li>
+<li>二级菜单项 hover：背景 <code>#F1F5FE</code>，文字 <code>#2C87FF</code>。</li>
+<li>二级菜单项 active：背景 <code>#EAF3FF</code>，文字 <code>#2C87FF</code>，可使用左侧树线标识当前层级。</li>
+<li>二级菜单 hover 不允许使用一级菜单蓝底白字样式。</li>
+<li>收起态不展示内嵌二级菜单，改为固定浮层：<code>left:64px</code>，宽度约 <code>150px</code>，圆角 <code>8px</code>，阴影 <code>0 14px 28px rgba(15,23,42,.16)</code>。</li>
+<li>浮层菜单项高度：<code>34px</code>，hover / active 使用 <code>#EAF3FF</code> 与 <code>#2C87FF</code>。</li>
+<li>Tooltip：背景 <code>#111827</code>，白色文字，高度 <code>30px</code>，圆角 <code>5px</code>，阴影 <code>0 8px 20px rgba(0,0,0,.16)</code>。</li>
+</ul>
+<h3>表格操作栏交互</h3>
+<ul>
+<li>操作项使用文字链接，不使用按钮背景，不使用图标。</li>
+<li>每行只直接展示 2 个高频操作，其余放入“更多”。</li>
+<li>“更多”后面不加箭头。</li>
+<li>“更多”必须显示完整文字，不使用省略号替代。</li>
+<li>默认颜色：<code>#2A7DF9</code>。</li>
+<li>Hover 颜色可保持 <code>#2A7DF9</code> 或切换 <code>#2C87FF</code>，并可轻微上移 <code>1px</code>。</li>
+<li>多个操作项之间必须使用竖向分隔线：颜色 <code>#DCDFE6</code>，宽度 <code>1px</code>，高度 <code>12px</code>。</li>
+</ul>
+<h3>状态类命名</h3>
+<ul>
+<li><code>.active</code>：当前页面、当前分页、当前二级菜单。</li>
+<li><code>.selected</code>：当前一级菜单。</li>
+<li><code>.expanded</code>：父级菜单展开。</li>
+<li><code>.collapsed</code>：侧边栏收起。</li>
+<li><code>.open</code>：下拉框展开。</li>
+<li><code>.show-float-sub</code>：收起状态下显示二级菜单浮层。</li>
+</ul>
+<h3>Do</h3>
+<ul>
+<li>使用 <code>1440 × 900</code> 作为主要校验尺寸。</li>
+<li>优先复用本文 token，不新增相近颜色。</li>
+<li>按钮、输入框、选择框高度统一 <code>32px</code>。</li>
+<li>表格行高统一 <code>50px</code>。</li>
+<li>左侧导航同时考虑展开态、收起态、Tooltip 和二级菜单。</li>
+<li>表格必须考虑超宽、横向滚动、固定操作列、斑马纹和 Hover。</li>
+<li>弹框、抽屉、浮层使用统一圆角和阴影。</li>
+</ul>
+<h3>Don’t</h3>
+<ul>
+<li>不要重新设计视觉风格。</li>
+<li>不要新增大面积渐变、营销页结构或装饰性视觉。</li>
+<li>不要卡片套卡片。</li>
+<li>不要随意改变顶部导航高度和侧栏宽度。</li>
+<li>不要在表格 Hover 时改变行高。</li>
+<li>不要混用过多蓝色，优先使用 <code>#2A7DF9</code>、<code>#2C87FF</code>、<code>#1F70EF</code>。</li>
+<li>不要用红色表达普通提示，红色只用于错误、危险、删除。</li>
+</ul>
+<h2>CSS Token</h2>
+<pre><code>:root {
+  --font-family-base: &quot;PingFang SC&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
+
+  --color-primary: #2A7DF9;
+  --color-primary-hover: #2C87FF;
+  --color-primary-active: #1F70EF;
+  --color-primary-deep: #0052D9;
+  --color-primary-bg: #EAF3FF;
+  --color-primary-bg-light: #F1F5FE;
+  --color-focus-ring: #D9E1FF;
+
+  --color-text-1: #1D2129;
+  --color-text-2: #4E5969;
+  --color-text-3: #86909C;
+  --color-text-4: #999999;
+  --color-text-primary: rgba(0, 0, 0, .90);
+  --color-text-secondary: rgba(0, 0, 0, .60);
+  --color-text-placeholder: rgba(0, 0, 0, .40);
+  --color-text-disabled: rgba(0, 0, 0, .26);
+
+  --color-border: #E5E6EB;
+  --color-border-strong: #DCDCDC;
+  --color-border-muted: #C9CDD4;
+
+  --color-bg-page: #F1F5FE;
+  --color-bg-layout: #F7F8FA;
+  --color-bg-soft: #FAFAFA;
+  --color-bg-card: #FFFFFF;
+  --color-bg-disabled: #EEEEEE;
+  --color-bg-disabled-light: #F2F3F5;
+  --color-bg-topbar: #1D2129;
+
+  --color-success: #00B42A;
+  --color-warning: #FF9F18;
+  --color-danger: #F53F3F;
+
+  --font-size-title-xl: 20px;
+  --line-height-title-xl: 28px;
+  --font-size-title-md: 16px;
+  --line-height-title-md: 24px;
+  --font-size-body: 14px;
+  --line-height-body: 22px;
+  --font-size-helper: 12px;
+  --line-height-helper: 20px;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --topbar-height: 54px;
+  --sidebar-width-expanded: 200px;
+  --sidebar-width-collapsed: 64px;
+  --control-height: 32px;
+  --table-row-height: 50px;
+
+  --shadow-sm: 0 1px 10px rgba(0,0,0,.05), 0 4px 5px rgba(0,0,0,.08), 0 2px 4px -1px rgba(0,0,0,.12);
+  --shadow-md: 0 3px 14px 2px rgba(0,0,0,.05), 0 8px 10px 1px rgba(0,0,0,.06), 0 5px 5px -3px rgba(0,0,0,.10);
+  --shadow-lg: 0 6px 30px 5px rgba(0,0,0,.05), 0 16px 24px 2px rgba(0,0,0,.04), 0 8px 10px -5px rgba(0,0,0,.08);
+  --shadow-drawer: -4px 0 4px rgba(0,0,0,.03);
+  --shadow-menu: 0 4px 10px rgba(0,0,0,.10);
+  --shadow-focus: 0 0 0 2px #D9E1FF;
+}</code></pre>
+<h2>Codex 后续使用规则</h2>
+<ul>
+<li>生成或修改页面前，必须先阅读本文件。</li>
+<li>必须优先复用 <code>design-source-html/</code> 的 HTML token、组件名、变体名和样式。</li>
+<li>生成具体页面时，必须同时阅读对应 <code>UI_SPEC.md</code>；如果有页面截图，布局比例以截图为校验依据。</li>
+<li><code>design-source/</code> 中 SVG 用于视觉对照，不作为唯一数据来源。</li>
+<li>页面默认按 <code>1440 × 900</code> 校验。</li>
+<li>不确定的规则必须标注“待从规范稿确认”，不要自行补成确定规范。</li>
+<li>涉及导航时，必须覆盖展开态、收起态、Tooltip、二级菜单浮层。</li>
+<li>涉及表格时，必须覆盖普通表格、超宽表格、固定操作列、横向滚动、斑马纹、Hover。</li>
+<li>涉及表单时，控件高度统一 <code>32px</code>，正文统一 <code>14px / 22px</code>。</li>
+<li>涉及弹框/抽屉时，使用 <code>6px</code> 圆角和本文阴影，不要自创浮层风格。</li>
+</ul></section>
+  </main>
+</div>
+</body>
+</html>
